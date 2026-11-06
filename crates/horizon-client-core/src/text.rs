@@ -466,7 +466,7 @@ impl Text {
                     continue;
                 }
                 let Some(code) = chars.next() else { break };
-                let next = legacy_format(&style, code, &span.style);
+                let next = legacy_format(&style, code, &style);
                 if next != style {
                     if !current.is_empty() {
                         out.spans.push(Span {
