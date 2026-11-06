@@ -518,11 +518,12 @@ pub fn get_bytes(url: &str) -> Result<Vec<u8>, String> {
 pub(crate) fn get(url: &str) -> Result<ureq::Response, String> {
     let mut request = agent(url).get(url);
     // CI runners share addresses and hit GitHub's anonymous rate limit; they pass their own token.
-    if let Some(token) = std::env::var("HORIZON_GITHUB_TOKEN")
-        .ok()
-        .filter(|t| !t.is_empty())
-    {
-        if url.starts_with("https://api.github.com/") {
+    // Only over HTTPS: a token must never go out in the clear.
+    if url.starts_with("https://") {
+        if let Some(token) = std::env::var("HORIZON_GITHUB_TOKEN")
+            .ok()
+            .filter(|t| !t.is_empty())
+        {
             request = request.set("Authorization", &format!("Bearer {token}"));
         }
     }
